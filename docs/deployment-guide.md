@@ -31,7 +31,7 @@ Set these environment variables in Render:
 | `NODE_ENV` | `production` |
 | `MONGODB_URI` | The Atlas URI for `validation_engine` |
 | `CLIENT_URL` | The exact Vercel origin, such as `https://your-app.vercel.app` |
-| `CLIENT_URLS` | Optional comma-separated extra origins, such as a custom domain |
+| `CLIENT_URL` | Optional comma-separated extra origins, such as a custom domain |
 
 Render supplies `PORT`. The API binds to that port on `0.0.0.0`. Copy the deployed API URL, such as `https://your-api.onrender.com`.
 
