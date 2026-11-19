@@ -102,41 +102,15 @@ app.use(httpInspectorMiddleware);
 // Vercel imports this module instead of running the local startup block below.
 // Connect lazily for routes that use MongoDB, while preserving the in-memory
 // fallback when no database URI is configured or MongoDB is temporarily down.
-const ensureDatabaseConnection = async (req, res, next) => {
-  if (
-    process.env.NODE_ENV === 'test'
-    || (!process.env.MONGODB_URI && !process.env.MONGO_URI)
-    || mongoose.connection.readyState === 1
-  ) {
-    return next();
-  }
+const mongoose = require("mongoose");
 
-  if (Date.now() < databaseRetryAfter) {
-    return next();
-  }
-
-  if (!databaseConnectionPromise) {
-    databaseConnectionPromise = connectDB()
-      .then((connected) => {
-        if (!connected) databaseRetryAfter = Date.now() + 10_000;
-      })
-      .finally(() => {
-        databaseConnectionPromise = undefined;
-      });
-  }
-
-  try {
-    await databaseConnectionPromise;
-    return next();
-  } catch (error) {
-    return next(error);
-  }
-};
-
-app.use(
-  ['/api/health', '/api/validate', '/api/history', '/api/analytics', '/api/rules', '/api/http', '/api/sessions'],
-  ensureDatabaseConnection
-);
+mongoose.connect(process.env.MONGODB_URI)
+  .then(() => {
+    console.log("MongoDB Connected Successfully");
+  })
+  .catch((error) => {
+    console.error("MongoDB Connection Error:", error);
+  });
 
 // 3️⃣ Mount API routes (all under /api)
 app.use('/api/health', healthRoutes);

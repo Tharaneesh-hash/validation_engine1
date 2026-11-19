@@ -6,20 +6,15 @@ let lastConnectionError = null;
  * Constructs and sanitizes the MongoDB connection URI, ensuring
  * production only uses the connection string supplied by Render.
  */
-export const getCleanMongoURI = () => {
-  let uri = process.env.MONGODB_URI || process.env.MONGO_URI || '';
-  const username = process.env.MONGODB_USERNAME;
-  const password = process.env.MONGODB_PASSWORD;
+const mongoose = require("mongoose");
 
-  if (username && password && uri) {
-    const encodedUser = encodeURIComponent(username.trim());
-    const encodedPass = encodeURIComponent(password.trim());
-
-    if (uri.includes('<username>') || uri.includes('<password>')) {
-      uri = uri.replace('<username>', encodedUser).replace('<password>', encodedPass);
-    }
-  }
-
+mongoose.connect(process.env.MONGODB_URI)
+  .then(() => {
+    console.log("MongoDB Connected Successfully");
+  })
+  .catch((error) => {
+    console.error("MongoDB Connection Error:", error);
+  });
   // Handle unencoded @ in password (e.g., mongodb+srv://user:pass@word@host)
   if (uri.startsWith('mongodb+srv://') || uri.startsWith('mongodb://')) {
     const prefix = uri.startsWith('mongodb+srv://') ? 'mongodb+srv://' : 'mongodb://';
