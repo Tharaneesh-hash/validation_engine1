@@ -102,7 +102,6 @@ app.use(httpInspectorMiddleware);
 // Vercel imports this module instead of running the local startup block below.
 // Connect lazily for routes that use MongoDB, while preserving the in-memory
 // fallback when no database URI is configured or MongoDB is temporarily down.
-const mongoose = require("mongoose");
 
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => {
