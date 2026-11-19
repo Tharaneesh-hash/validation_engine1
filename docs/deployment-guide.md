@@ -42,7 +42,7 @@ Create a Vercel project from this repository and keep **Root Directory** at the 
 In Vercel **Settings → Environment Variables**, set:
 
 ```text
-VITE_API_URL=https://your-api.onrender.com/api
+VITE_API_URL=https://validation-engine1-11.onrender.com
 ```
 
 Replace the example with your Render service URL, enable the variable for Production, and redeploy. Vercel environment changes apply to new deployments, and Vite includes this API URL in the frontend build.
