@@ -1,1 +1,1 @@
-{"backend":{"port":5001,"env":"development"},"frontend":{"port":5173},"api":{"base":"http://localhost:5001/api","health":"http://localhost:5001/api/health"}}
+{"backend":{"port":5001,"env":"production"},"frontend":{"port":5173},"api":{"base":"http://localhost:5001/api","health":"http://localhost:5001/api/health"}}

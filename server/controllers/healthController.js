@@ -11,7 +11,7 @@ export const getHealth = (req, res) => {
     message: 'Regex & DFA Validation Engine API is running smoothly.',
     timestamp: new Date().toISOString(),
     uptimeSeconds: Math.floor(process.uptime()),
-    environment: process.env.NODE_ENV || 'development',
+    environment: process.env.NODE_ENV || 'production',
     server: {
       runtime: 'Node.js',
       version: process.version,

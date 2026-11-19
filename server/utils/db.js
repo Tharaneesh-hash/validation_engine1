@@ -6,15 +6,20 @@ let lastConnectionError = null;
  * Constructs and sanitizes the MongoDB connection URI, ensuring
  * production only uses the connection string supplied by Render.
  */
-const mongoose = require("mongoose");
+export const getCleanMongoURI = () => {
+  let uri = process.env.MONGODB_URI || process.env.MONGO_URI || '';
+  const username = process.env.MONGODB_USERNAME;
+  const password = process.env.MONGODB_PASSWORD;
 
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => {
-    console.log("MongoDB Connected Successfully");
-  })
-  .catch((error) => {
-    console.error("MongoDB Connection Error:", error);
-  });
+  if (username && password && uri) {
+    const encodedUser = encodeURIComponent(username.trim());
+    const encodedPass = encodeURIComponent(password.trim());
+
+    if (uri.includes('<username>') || uri.includes('<password>')) {
+      uri = uri.replace('<username>', encodedUser).replace('<password>', encodedPass);
+    }
+  }
+
   // Handle unencoded @ in password (e.g., mongodb+srv://user:pass@word@host)
   if (uri.startsWith('mongodb+srv://') || uri.startsWith('mongodb://')) {
     const prefix = uri.startsWith('mongodb+srv://') ? 'mongodb+srv://' : 'mongodb://';
@@ -44,7 +49,7 @@ mongoose.connect(process.env.MONGODB_URI)
     throw new Error('Production MONGODB_URI must point to a hosted database, not localhost.');
   }
 
-  return uri || 'mongodb://127.0.0.1:27017/validation_engine';
+  return uri || 'mongodb+srv://tharaneeshk07_db_user:i0EHpgSdEkKbDrJP@cluster1.ugmnlf6.mongodb.net';
 };
 
 export const connectDB = async () => {

@@ -1,2 +1,2 @@
 Run from server folder: node server.js
-Environment: PORT=5001, NODE_ENV=development, MONGODB_URI=mongodb://127.0.0.1:27017/validation_engine
+Environment: PORT=5001, NODE_ENV=production, MONGODB_URI=mongodb+srv://tharaneeshk07_db_user:i0EHpgSdEkKbDrJP@cluster1.ugmnlf6.mongodb.net
