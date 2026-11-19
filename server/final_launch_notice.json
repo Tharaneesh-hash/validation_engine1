@@ -1,1 +1,1 @@
-{"backend":{"health":"http://localhost:5001/api/health"},"frontend":{"url":"http://localhost:5173"},"status":"ready"}
+{"backend":{"health":"http://localhost:5001/api/health"},"frontend":{"url":"http://localhost:5173/"},"status":"ready"}

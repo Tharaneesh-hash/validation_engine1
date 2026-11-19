@@ -1,1 +1,1 @@
-{"launcher":"run_local_app.cmd","frontend":"http://localhost:5173","backendHealth":"http://localhost:5001/api/health"}
+{"launcher":"run_local_app.cmd","frontend":"http://localhost:5173/","backendHealth":"http://localhost:5001/api/health"}
