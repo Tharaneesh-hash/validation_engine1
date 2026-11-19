@@ -14,7 +14,7 @@
     "command": "C:\\Program Files\\nodejs\\npm.cmd",
     "args": ["run", "dev", "--", "--host", "0.0.0.0"],
     "env": {
-      "VITE_API_URL": "https://validation-engine1-11.onrender.com"
+      "VITE_API_URL": "https://validation-engine1-11.onrender.com/api"
     }
   }
 }
