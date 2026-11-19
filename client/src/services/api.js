@@ -1,7 +1,13 @@
 import axios from 'axios';
 
 // Create central Axios instance with trailing slash normalization
-const rawBaseURL = import.meta.env.VITE_API_URL || '/api';
+const configuredBaseURL = import.meta.env.VITE_API_URL?.trim();
+const rawBaseURL = configuredBaseURL || (import.meta.env.DEV ? '/api' : '');
+
+if (!rawBaseURL) {
+  throw new Error('VITE_API_URL must point to the deployed Render API, including /api.');
+}
+
 const baseURL = rawBaseURL.replace(/\/+$/, '');
 
 const api = axios.create({

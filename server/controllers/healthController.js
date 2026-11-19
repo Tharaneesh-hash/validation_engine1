@@ -4,9 +4,10 @@ import { networkStats } from '../middleware/networkTracker.js';
 
 export const getHealth = (req, res) => {
   const memoryUsage = process.memoryUsage();
+  const database = getDBStatus();
 
   const healthData = {
-    status: 'healthy',
+    status: database.state === 'connected' ? 'healthy' : 'degraded',
     message: 'Regex & DFA Validation Engine API is running smoothly.',
     timestamp: new Date().toISOString(),
     uptimeSeconds: Math.floor(process.uptime()),
@@ -25,11 +26,11 @@ export const getHealth = (req, res) => {
         heapUsed: (memoryUsage.heapUsed / (1024 * 1024)).toFixed(2)
       }
     },
-    database: getDBStatus(),
+    database,
     network: networkStats.getMetrics()
   };
 
-  res.status(200).json({
+  res.status(database.state === 'connected' ? 200 : 503).json({
     success: true,
     data: healthData
   });

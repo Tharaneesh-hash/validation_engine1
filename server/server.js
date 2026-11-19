@@ -41,30 +41,38 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // ------------------------------------------------------------------
-// Load environment variables (Vercel injects them automatically)
+// Local development settings only. Render supplies production environment
+// variables directly, so the local backend.env file is never loaded there.
 // ------------------------------------------------------------------
-dotenv.config({ path: path.join(__dirname, '.env') });
-dotenv.config();
+if (process.env.NODE_ENV !== 'production') {
+  dotenv.config({ path: path.join(__dirname, 'backend.env') });
+  dotenv.config();
+}
 
 // ------------------------------------------------------------------
 // Express app setup
 // ------------------------------------------------------------------
 const app = express();
-const PORT = process.env.PORT || 5000;
-const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:5173';
+const PORT = process.env.PORT || (process.env.NODE_ENV === 'production' ? 10000 : 5000);
+const CLIENT_URL = process.env.CLIENT_URL || (process.env.NODE_ENV === 'production' ? '' : 'http://localhost:5173');
 let databaseConnectionPromise;
 let databaseRetryAfter = 0;
 
 // 1️⃣ Core middle‑wares & CORS Configuration (Render -> Vercel)
-const allowedOrigins = [
-  process.env.CLIENT_URL,
+const developmentOrigins = process.env.NODE_ENV === 'production' ? [] : [
   'http://localhost:5173',
   'http://127.0.0.1:5173',
   'http://localhost:5174',
   'http://127.0.0.1:5174',
   'http://localhost:5175',
   'http://127.0.0.1:5175',
-].filter(Boolean).map(url => url.replace(/\/$/, ''));
+];
+const configuredOrigins = [
+  process.env.CLIENT_URL,
+  ...(process.env.CLIENT_URLS || '').split(','),
+  ...developmentOrigins,
+].filter(Boolean).map(url => url.trim().replace(/\/$/, ''));
+const allowedOrigins = [...new Set(configuredOrigins)];
 
 app.use(
   cors({
@@ -73,14 +81,10 @@ app.use(
       if (!origin) return callback(null, true);
 
       const cleanOrigin = origin.replace(/\/$/, '');
-      if (
-        allowedOrigins.includes(cleanOrigin) ||
-        /\.vercel\.app$/.test(new URL(origin).hostname) ||
-        process.env.NODE_ENV !== 'production'
-      ) {
+      if (allowedOrigins.includes(cleanOrigin) || process.env.NODE_ENV !== 'production') {
         return callback(null, true);
       }
-      return callback(null, true); // Fallback: allow all origins to avoid blocking in cloud deployment
+      return callback(new Error('Origin is not allowed by CORS.'));
     },
     credentials: true,
   })
@@ -101,7 +105,7 @@ app.use(httpInspectorMiddleware);
 const ensureDatabaseConnection = async (req, res, next) => {
   if (
     process.env.NODE_ENV === 'test'
-    || !process.env.MONGODB_URI
+    || (!process.env.MONGODB_URI && !process.env.MONGO_URI)
     || mongoose.connection.readyState === 1
   ) {
     return next();
@@ -183,8 +187,11 @@ const isDirectExecution = process.argv[1]
 
 if (isDirectExecution && process.env.NODE_ENV !== 'test') {
   const startServer = async () => {
-    await connectDB();
-    app.listen(PORT, () => {
+    const databaseConnected = await connectDB();
+    if (!databaseConnected && process.env.NODE_ENV === 'production') {
+      throw new Error('MongoDB is required in production. Check the MONGODB_URI setting in Render.');
+    }
+    app.listen(PORT, '0.0.0.0', () => {
       console.log('====================================================');
       console.log(`🚀 Validation Engine Server running on port: ${PORT}`);
       console.log(`📡 Health Check: http://localhost:${PORT}/api/health`);
