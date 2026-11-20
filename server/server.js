@@ -57,6 +57,16 @@ const PORT = process.env.PORT || (process.env.NODE_ENV === 'production' ? 10000 
 const CLIENT_URL = process.env.CLIENT_URL || (process.env.NODE_ENV === 'production' ? '' : 'http://localhost:5173');
 let databaseConnectionPromise;
 let databaseRetryAfter = 0;
+app.get("/api/health", (req, res) => {
+  const dbConnected = mongoose.connection.readyState === 1;
+
+  res.status(dbConnected ? 200 : 503).json({
+    success: dbConnected,
+    api: "online",
+    database: dbConnected ? "connected" : "disconnected",
+    timestamp: new Date().toISOString()
+  });
+});
 
 // 1️⃣ Core middle‑wares & CORS Configuration (Render -> Vercel)
 const developmentOrigins = process.env.NODE_ENV === 'production' ? [] : [
@@ -155,6 +165,7 @@ app.use(errorHandler);
 // (i.e. `node server.js`). When Vercel imports the file it will
 // skip this block and just use the exported Express app.
 // ------------------------------------------------------------------
+
 const isDirectExecution = process.argv[1]
   && pathToFileURL(path.resolve(process.argv[1])).href === import.meta.url;
 
