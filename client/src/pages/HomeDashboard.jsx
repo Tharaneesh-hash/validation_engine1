@@ -1,4 +1,6 @@
 import React from 'react';
+import React, { useEffect } from 'react';
+import { checkAPI } from '../services/api';
 import { 
   ArrowRight, 
   GitFork, 
@@ -19,6 +21,14 @@ import {
 } from 'lucide-react';
 
 export default function HomeDashboard({ setActiveTab, healthData }) {
+    useEffect(() => {
+    const testAPI = async () => {
+      const data = await checkAPI();
+      console.log("Backend API Health:", data);
+    };
+
+    testAPI();
+  }, []);
   const quickModules = [
     {
       id: 'security-dashboard',

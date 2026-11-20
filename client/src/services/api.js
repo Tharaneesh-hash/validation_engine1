@@ -43,4 +43,21 @@ api.interceptors.response.use(
   }
 );
 
+const API_URL = import.meta.env.VITE_API_URL;
+
+export const checkAPI = async () => {
+  try {
+    const response = await fetch(`${API_URL}/health`);
+
+    const data = await response.json();
+
+    console.log("API Health:", data);
+
+    return data;
+  } catch (error) {
+    console.error("API connection failed:", error);
+    return null;
+  }
+};
+
 export default api;
