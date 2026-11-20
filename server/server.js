@@ -167,7 +167,7 @@ if (isDirectExecution && process.env.NODE_ENV !== 'test') {
     app.listen(PORT, '0.0.0.0', () => {
       console.log('====================================================');
       console.log(`🚀 Validation Engine Server running on port: ${PORT}`);
-      console.log(`📡 Health Check: http://localhost:${PORT}/api/health`);
+      console.log(`📡 Health Check: https://validation-engine1-11.onrender.com/api/health`);
       console.log(`🌐 Client Origin: ${CLIENT_URL}`);
       console.log('====================================================');
     });
