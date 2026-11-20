@@ -35,7 +35,7 @@ export const NAV_ITEMS = [
   { id: 'network', label: 'Network Monitoring', icon: Activity, category: 'Computer Networks' },
 ];
 
-export default function Sidebar({ activeTab, setActiveTab }) {
+export default function Sidebar({ activeTab, setActiveTab }) {  
   // Group navigation items by category
   const categories = [
     'Overview',
