@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 
 
+export default function HomeDashboard({ setActiveTab }) {
   const quickModules = [
     {
       id: 'security-dashboard',
@@ -428,5 +429,5 @@ import {
       </div>
     </div>
   );
-
+}
 
