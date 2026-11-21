@@ -54,19 +54,11 @@ if (process.env.NODE_ENV !== 'production') {
 // ------------------------------------------------------------------
 const app = express();
 const PORT = process.env.PORT || (process.env.NODE_ENV === 'production' ? 10000 : 5000);
-const CLIENT_URL = process.env.CLIENT_URL || (process.env.NODE_ENV === 'production' ? '' : 'http://localhost:5173');
-let databaseConnectionPromise;
-let databaseRetryAfter = 0;
-app.get("/api/health", (req, res) => {
-  const dbConnected = mongoose.connection.readyState === 1;
-
-  res.status(dbConnected ? 200 : 503).json({
-    success: dbConnected,
-    api: "online",
-    database: dbConnected ? "connected" : "disconnected",
-    timestamp: new Date().toISOString()
-  });
-});
+const CLIENT_URL = process.env.CLIENT_URL || (
+  process.env.NODE_ENV === 'production'
+    ? 'https://validation-engine-cookie-oymy.vercel.app'
+    : 'http://localhost:5173'
+);
 
 // 1️⃣ Core middle‑wares & CORS Configuration (Render -> Vercel)
 const developmentOrigins = process.env.NODE_ENV === 'production' ? [] : [
@@ -112,14 +104,6 @@ app.use(httpInspectorMiddleware);
 // Vercel imports this module instead of running the local startup block below.
 // Connect lazily for routes that use MongoDB, while preserving the in-memory
 // fallback when no database URI is configured or MongoDB is temporarily down.
-
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => {
-    console.log("MongoDB Connected Successfully");
-  })
-  .catch((error) => {
-    console.error("MongoDB Connection Error:", error);
-  });
 
 // 3️⃣ Mount API routes (all under /api)
 app.use('/api/health', healthRoutes);
@@ -172,8 +156,14 @@ const isDirectExecution = process.argv[1]
 if (isDirectExecution && process.env.NODE_ENV !== 'test') {
   const startServer = async () => {
     const databaseConnected = await connectDB();
-    if (!databaseConnected && process.env.NODE_ENV === 'production') {
-      throw new Error('MongoDB is required in production. Check the MONGODB_URI setting in Render.');
+    if (!databaseConnected) {
+      console.warn('[Startup] API is starting with MongoDB disconnected; health checks will report the database state.');
+      const retryTimer = setInterval(async () => {
+        if (mongoose.connection.readyState === 0) {
+          await connectDB();
+        }
+      }, 30000);
+      retryTimer.unref();
     }
     app.listen(PORT, '0.0.0.0', () => {
       console.log('====================================================');

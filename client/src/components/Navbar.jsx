@@ -4,6 +4,7 @@ import { NAV_ITEMS } from './Sidebar';
 
 export default function Navbar({ activeTab, healthData, loading, onRefresh, clientLatency }) {
   const currentItem = NAV_ITEMS.find(item => item.id === activeTab) || { label: 'Dashboard' };
+  const apiOnline = Boolean(healthData);
 
   return (
     <header style={{
@@ -40,12 +41,12 @@ export default function Navbar({ activeTab, healthData, loading, onRefresh, clie
           borderRadius: '9999px',
           fontSize: '0.75rem',
           fontWeight: '500',
-          background: healthData?.status === 'healthy' ? 'var(--color-success-bg)' : 'var(--color-danger-bg)',
-          color: healthData?.status === 'healthy' ? 'var(--color-success)' : 'var(--color-danger)',
-          border: `1px solid ${healthData?.status === 'healthy' ? 'var(--color-success-border)' : 'var(--color-danger-border)'}`
+          background: apiOnline ? 'var(--color-success-bg)' : 'var(--color-danger-bg)',
+          color: apiOnline ? 'var(--color-success)' : 'var(--color-danger)',
+          border: `1px solid ${apiOnline ? 'var(--color-success-border)' : 'var(--color-danger-border)'}`
         }}>
           <Server size={13} />
-          <span>API: {healthData?.status === 'healthy' ? 'Online' : 'Offline'}</span>
+          <span>API: {apiOnline ? 'Online' : 'Offline'}</span>
         </div>
 
         {/* Database status */}

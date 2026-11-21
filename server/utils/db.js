@@ -53,9 +53,8 @@ export const getCleanMongoURI = () => {
 };
 
 export const connectDB = async () => {
-  const uri = getCleanMongoURI();
-
   try {
+    const uri = getCleanMongoURI();
     const conn = await mongoose.connect(uri, {
       serverSelectionTimeoutMS: 5000,
       autoIndex: true,

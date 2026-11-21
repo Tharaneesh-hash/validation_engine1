@@ -31,6 +31,7 @@ export default function App() {
       setHealthData(response.data.data);
       setClientLatency(response.latencyMs);
     } catch (err) {
+      setHealthData(null);
       console.error('Error fetching backend health:', err);
     } finally {
       setLoading(false);

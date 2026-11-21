@@ -30,7 +30,9 @@ export const getHealth = (req, res) => {
     network: networkStats.getMetrics()
   };
 
-  res.status(database.state === 'connected' ? 200 : 503).json({
+  // The API is healthy enough to serve requests even when MongoDB is down.
+  // Keep health checks successful so clients can show the database's real state.
+  res.status(200).json({
     success: true,
     data: healthData
   });
