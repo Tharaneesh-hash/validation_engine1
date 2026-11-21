@@ -15,7 +15,7 @@ export default defineConfig(({ mode }) => {
       port: 5173,
       proxy: {
         '/api': {
-          target: process.env.VITE_BACKEND_URL || 'https://validation-engine1-12.onrender.com/api',
+          target: process.env.VITE_BACKEND_URL || 'https://validation-engine1-13.onrender.com/api',
           changeOrigin: true,
           secure: false
         }
